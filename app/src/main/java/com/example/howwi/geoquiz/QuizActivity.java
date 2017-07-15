@@ -17,7 +17,10 @@ public class QuizActivity extends AppCompatActivity {
     private Button mTrueButton;
     private Button mFalseButton;
     private Button mNextButton;
+    private Button mPrevButton;
+    private Button mCheatButton;
     private TextView mQuestionTextView;
+
 
     //Array Containing all of the Questions
     private Question[] mQuestionBank = new Question[]{
@@ -90,7 +93,25 @@ public class QuizActivity extends AppCompatActivity {
                 updateQuestion();
             }
         });
-            updateQuestion();
+        //previous button code (wip)
+        mPrevButton = (Button) findViewById(R.id.prev_button);
+        mPrevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
+                updateQuestion();
+            }
+        });
+        //cheat button code
+        mCheatButton = (Button)findViewById(R.id.cheat_button);
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            //nothing here yet
+            }
+        });
+
+        updateQuestion();
     }
 
     @Override
