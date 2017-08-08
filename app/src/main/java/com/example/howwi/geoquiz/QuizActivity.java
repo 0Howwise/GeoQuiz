@@ -1,5 +1,6 @@
 package com.example.howwi.geoquiz;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,7 +44,7 @@ public class QuizActivity extends AppCompatActivity {
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
 
-        int messageResId = 0;
+        int messageResId;
 
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
@@ -62,69 +63,71 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        if (savedInstanceState != null) {
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+        }
+            mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
 
+            // False button code
+            mFalseButton = (Button) findViewById(R.id.false_button);
+            mFalseButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkAnswer(false);
+                }
+            });
 
-        mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
+            // True button code
+            mTrueButton = (Button) findViewById(R.id.true_button);
+            mTrueButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkAnswer(true);
+                }
+            });
 
-        // False button code
-        mFalseButton = (Button) findViewById(R.id.false_button);
-        mFalseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkAnswer(false);
-            }
-        });
+            // Next Button listener
+            mNextButton = (Button) findViewById(R.id.next_Button);
+            mNextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                    updateQuestion();
+                }
+            });
+            //previous button code
+            mPrevButton = (Button) findViewById(R.id.prev_button);
+            mPrevButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCurrentIndex--;
+                    if (mCurrentIndex < 0)
+                        mCurrentIndex = mQuestionBank.length - 1;
+                    updateQuestion();
+                }
+            });
+            //cheat button code. it starts the activity when the button is pressed, and also uses an intent and a extra to pass data between the two activities
 
-        // True button code
-        mTrueButton = (Button) findViewById(R.id.true_button);
-        mTrueButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkAnswer(true);
-            }
-        });
+            mCheatButton = (Button) findViewById(R.id.cheat_button);
+            mCheatButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //starting CheatActivity
+                    boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+                    Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                    startActivity(intent);
+                }
+            });
 
-        // Next Button listener
-        mNextButton = (Button) findViewById(R.id.next_Button);
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-                updateQuestion();
-            }
-        });
-        //previous button code (wip)
-        mPrevButton = (Button) findViewById(R.id.prev_button);
-        mPrevButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
-                updateQuestion();
-            }
-        });
-        //cheat button code
-        mCheatButton = (Button)findViewById(R.id.cheat_button);
-        mCheatButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            //nothing here yet
-            }
-        });
+            updateQuestion();
+        }
 
-        updateQuestion();
-    }
-
-    @Override
+     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
-
-
-        if (savedInstanceState != null) {
-            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
-        }
-        updateQuestion();
-    }
+     }
 
 }
+
